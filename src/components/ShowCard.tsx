@@ -1,4 +1,4 @@
-import type { Show } from "../data/shows";
+import type { Show } from "../types/shows";
 
 interface ShowCardProps {
     show: Show;

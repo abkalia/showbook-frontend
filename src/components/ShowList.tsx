@@ -1,12 +1,12 @@
-import { shows } from "../data/shows";
-
 import ShowCard from "./ShowCard";
+import type { Show } from "../types/shows";
 
-interface ShowListProps{
-    searchTerm: String;
+interface ShowListProps {
+    shows: Show[];
+    searchTerm: string;
 }
 
-function ShowList({searchTerm}: ShowListProps) {
+function ShowList({ shows, searchTerm }: ShowListProps) {
 
 const normalizedSearch = searchTerm.trim().toLowerCase();
 
