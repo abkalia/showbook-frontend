@@ -15,22 +15,46 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    async function fetchShows() {
-      try{
-        setLoading(true);
-        setError("");
-        const data = await searchShows("superman");
+useEffect(() => {
+  const query = searchTerm.trim();
+
+  // Don't search for empty or very short queries
+  if (query.length < 2) {
+    setShows([]);
+    setLoading(false);
+    setError("");
+    return;
+  }
+
+  let ignore = false;
+
+  const timer = setTimeout(async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      const data = await searchShows(query);
+
+      if (!ignore) {
         setShows(data);
-      } catch(err) {
+      }
+    } catch (err) {
+      if (!ignore) {
         setError("Unable to fetch shows.");
-      } finally {
+      }
+    } finally {
+      if (!ignore) {
         setLoading(false);
       }
     }
+  }, 500);
 
-    fetchShows();
-  }, []);
+  // Cleanup
+    return () => {
+      clearTimeout(timer);
+      ignore = true;
+    };
+  }, [searchTerm]);
 
   return (
     <div className= "app">
@@ -48,15 +72,17 @@ function App() {
           onSearchChange={setSearchTerm}
         />
 
+        {searchTerm.trim().length < 2 && (
+          <p>Type at least 2 characters to search.</p>
+        )}
+
         {loading && <p>Loading shows...</p>}
         {error && <p>{error}</p>}
 
-        {!loading && !error && (
-          <ShowList
-              shows={shows}
-              searchTerm={searchTerm}
-          />
+        {!loading && !error && searchTerm.trim().length >= 2 && (
+        <ShowList shows={shows} searchTerm="" />
         )}
+      
       </main>
     </div>
   );
